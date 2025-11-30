@@ -12,35 +12,29 @@ class Employee:
 def compute_department_stats(employees, min_salary, min_years):
     from collections import defaultdict
 
-    depts = defaultdict(
-        lambda: {"total": 0, "count": 0, "salaries": []}
-    )  # Accumulate for avg, but keep list for median
-    for e in employees:
-        if (
-            e.salary >= min_salary and e.years_of_service > min_years
-        ):  # accidental bug: > instead of >= for years_of_service
-            dept_data = depts[e.department]
-            dept_data["total"] += e.salary
-            dept_data["count"] += 1
-            dept_data["salaries"].append(e.salary)
+    filtered = [
+        e
+        for e in employees
+        if e.salary >= min_salary and e.years_of_service >= min_years
+    ]
+    depts = defaultdict(list)
+    for e in filtered:
+        depts[e.department].append(e.salary)
     stats = {}
-    for dept, data in depts.items():
-        if data["count"] > 0:
-            avg = data["total"] / data["count"]
-            salaries = sorted(data["salaries"])
-            median_index = data["count"] // 2
+    for dept, sals in depts.items():
+        if sals:
+            sals.sort()
+            avg = sum(sals) / len(sals)
             median = (
-                salaries[median_index]
-                if data["count"] % 2
-                else (
-                    salaries[median_index - 1] + salaries[median_index]
-                )
+                sals[len(sals) // 2]
+                if len(sals) % 2
+                else (sals[len(sals) // 2 - 1] + sals[len(sals) // 2])
                 / 2
             )
             stats[dept] = {
                 "average": avg,
                 "median": median,
-                "count": data["count"],
+                "count": len(sals),
             }
     sorted_stats = sorted(stats.items())
     return sorted_stats
