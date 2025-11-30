@@ -1,6 +1,9 @@
 # test.py
 
-from employment import Employee, compute_department_stats  # or import from refactored if needed
+from employ import (
+    Employee,
+    compute_department_stats,
+)  # or import from refactored if needed
 
 # Create sample Employee instances
 employees = [
@@ -8,7 +11,7 @@ employees = [
     Employee("Bob", "Engineering", 80000, 4),
     Employee("Charlie", "HR", 55000, 7),
     Employee("David", "Engineering", 90000, 8),
-    Employee("Eve", "Sales", 70000, 5)
+    Employee("Eve", "Sales", 70000, 5),
 ]
 
 # Run the function with reasonable inputs
