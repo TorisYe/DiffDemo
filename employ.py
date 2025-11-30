@@ -1,6 +1,3 @@
-# refactored.py
-
-
 class Employee:
     def __init__(self, name, department, salary, years_of_service):
         self.name = name
