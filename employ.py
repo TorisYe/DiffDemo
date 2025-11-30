@@ -1,6 +1,3 @@
-# refactored.py
-
-
 class Employee:
     def __init__(self, name, department, salary, years_of_service):
         self.name = name
@@ -15,35 +12,53 @@ class Employee:
 def compute_department_stats(employees, min_salary, min_years):
     from collections import defaultdict
 
-    depts = defaultdict(
-        lambda: {"total": 0, "count": 0, "salaries": []}
-    )  # Accumulate for avg, but keep list for median
-    for e in employees:
-        if (
-            e.salary >= min_salary and e.years_of_service > min_years
-        ):  # accidental bug: > instead of >= for years_of_service
-            dept_data = depts[e.department]
-            dept_data["total"] += e.salary
-            dept_data["count"] += 1
-            dept_data["salaries"].append(e.salary)
+    filtered = [
+        e
+        for e in employees
+        if e.salary >= min_salary and e.years_of_service >= min_years
+    ]
+    depts = defaultdict(list)
+    for e in filtered:
+        depts[e.department].append(e.salary)
     stats = {}
-    for dept, data in depts.items():
-        if data["count"] > 0:
-            avg = data["total"] / data["count"]
-            salaries = sorted(data["salaries"])
-            median_index = data["count"] // 2
+    for dept, sals in depts.items():
+        if sals:
+            sals.sort()
+            avg = sum(sals) / len(sals)
             median = (
-                salaries[median_index]
-                if data["count"] % 2
-                else (
-                    salaries[median_index - 1] + salaries[median_index]
-                )
+                sals[len(sals) // 2]
+                if len(sals) % 2
+                else (sals[len(sals) // 2 - 1] + sals[len(sals) // 2])
                 / 2
             )
             stats[dept] = {
                 "average": avg,
                 "median": median,
-                "count": data["count"],
+                "count": len(sals),
             }
     sorted_stats = sorted(stats.items())
     return sorted_stats
+
+
+def find_highest_paid(employees):
+    if not employees:
+        return None
+    return max(employees, key=lambda e: e.salary)
+
+
+def count_employees_by_department(employees):
+    from collections import Counter
+
+    return Counter(e.department for e in employees)
+
+
+def average_salary_overall(employees):
+    if not employees:
+        return 0
+    return sum(e.salary for e in employees) / len(employees)
+
+
+def employees_with_bonus(employees, bonus_threshold):
+    return [
+        e for e in employees if e.years_of_service > bonus_threshold
+    ]
